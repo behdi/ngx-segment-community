@@ -1,0 +1,6 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "angular.log": "verbose",
+  "jsdoc-generator.includeTypes": false
+}
