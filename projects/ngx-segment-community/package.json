@@ -1,0 +1,13 @@
+{
+  "name": "ngx-segment-community",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "@angular/common": ">=12.0.0 <22.0.0",
+    "@angular/core": ">=12.0.0 <22.0.0",
+    "@segment/analytics-next": "^1.81.1"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

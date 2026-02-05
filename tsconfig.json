@@ -4,9 +4,13 @@
   "compileOnSave": false,
   "compilerOptions": {
     "strict": true,
+    "sourceMap": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
+    "paths": {
+      "ngx-segment-community": ["./dist/ngx-segment-community"]
+    },
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
@@ -22,5 +26,13 @@
     "typeCheckHostBindings": true,
     "strictTemplates": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/ngx-segment-community/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ngx-segment-community/tsconfig.spec.json"
+    }
+  ]
 }
