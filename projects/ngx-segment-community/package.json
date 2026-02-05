@@ -1,6 +1,23 @@
 {
   "name": "ngx-segment-community",
   "version": "1.0.0",
+  "description": "The community-maintained Angular wrapper for Segment Analytics (Analytics.js). Supports Angular 20+.",
+  "keywords": [
+    "angular",
+    "segment",
+    "analytics",
+    "ngx-segment-analytics",
+    "tracking"
+  ],
+  "author": "Behnam Sajadifar <beh.sajadi94@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/behdi/ngx-segment-community"
+  },
+  "bugs": {
+    "url": "https://github.com/behdi/ngx-segment-community/issues"
+  },
   "peerDependencies": {
     "@angular/common": ">=12.0.0 <22.0.0",
     "@angular/core": ">=12.0.0 <22.0.0",
