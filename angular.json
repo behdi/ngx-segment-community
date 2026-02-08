@@ -27,8 +27,21 @@
             "tsConfig": "projects/ngx-segment-community/tsconfig.spec.json",
             "polyfills": ["zone.js", "zone.js/testing"]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngx-segment-community/**/*.ts",
+              "projects/ngx-segment-community/**/*.html"
+            ],
+            "eslintConfig": "projects/ngx-segment-community/eslint.config.js"
+          }
         }
       }
     }
+  },
+  "cli": {
+    "schematicCollections": ["angular-eslint"]
   }
 }
