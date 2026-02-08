@@ -7,6 +7,8 @@
     "sourceMap": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
     "paths": {
       "ngx-segment-community": ["./dist/ngx-segment-community"]
