@@ -3,8 +3,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    // Turn off strict mode on compat branch
-    "strict": false,
+    "strict": true,
     "outDir": "../../out-tsc/lib",
     "declaration": true,
     "declarationMap": true,
