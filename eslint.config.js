@@ -102,6 +102,12 @@ module.exports = tseslint.config(
       ],
       "jsdoc/tag-lines": "off",
       "jsdoc/require-returns": "off",
+      "jsdoc/check-tag-names": [
+        "warn",
+        {
+          definedTags: ["internal"],
+        },
+      ],
 
       // ----- Typescript-eslint overrides -----
       "@typescript-eslint/unbound-method": ["error", { ignoreStatic: true }],
