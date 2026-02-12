@@ -1,5 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import {
+  type Analytics,
   type Callback,
   type Context,
   type EventProperties,
@@ -122,5 +123,33 @@ export class SegmentService {
     callback?: Callback,
   ): Promise<Context> {
     return this._s.client.track(eventName, properties, options, callback);
+  }
+
+  /**
+   *  Attaches a Track call as a handler to a link.
+   *
+   * When a user clicks the link, `trackLink` delays the navigation event by 300 ms.
+   * This ensures the Track request has enough time to leave the browser before the page unloads.
+   *
+   * **CRITICAL SPA WARNING**:
+   * Only use this for **external links** (e.g., exiting to a marketing site).
+   * Do NOT use this for internal Angular router links. It will force a full page reload,
+   * breaking the Single Page Application experience.
+   *
+   * @param linkEls - DOM element to bind with track method.
+   * @param event - String or a function that returns a string to use as the name of the track event.
+   * @param [properties] - A dictionary of properties, or a function returning a dictionary of promises that
+   * contains extra pieces of information you can tie to events you track. They can be anything that will be
+   * useful while analyzing the events later.
+   * @param [options] - A dictionary of options. For example, enable or disable specific destinations for the call.
+   * @returns A promise that resolves to the Analytics instance (for chaining).
+   */
+  public trackLink(
+    linkEls: Element | Element[],
+    event: string | (() => string),
+    properties?: EventProperties | (() => EventProperties),
+    options?: Options,
+  ): Promise<Analytics> {
+    return this._s.client.trackLink(linkEls, event, properties, options);
   }
 }
