@@ -2,6 +2,7 @@ import { computed, inject, Injectable } from '@angular/core';
 import {
   type Callback,
   type Context,
+  type EventProperties,
   type Options,
   type UserTraits,
 } from '@segment/analytics-next';
@@ -89,5 +90,37 @@ export class SegmentService {
     callback?: Callback,
   ): Promise<Context> {
     return this._s.client.identify(userId, traits, options, callback);
+  }
+
+  /**
+   * Allows you to record actions your users perform.
+   *
+   * Each action is known as an event. Each event has a name, like "User Registered", and some properties.
+   * For example, a "User Registered" event _might_ have properties like `plan` or `accountType`.
+   *
+   * @param eventName - The name of the event you're tracking
+   * @param [properties] - A dictionary of properties containing extra pieces of information you can tie
+   * to events you track. They can be anything that will be useful while analyzing the events later.
+   * @param [options] - A dictionary of options. For example, enable or disable specific destinations for the call.
+   * @param [callback] - A function executed after a timeout of 300 ms, giving the browser time to make outbound requests
+   * first.
+   * @returns — A promise that resolves to a dispatched event.
+   *
+   * @example
+   * segment.track("User Registered", {
+   *   plan: "Pro Annual",
+   *   accountType: "Facebook"
+   *  }
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#track | Track Docs}
+   * @see {@link https://www.twilio.com/en-us/resource-center/naming-conventions-for-clean-data | Best practices for event naming}
+   */
+  public track(
+    eventName: string,
+    properties?: EventProperties,
+    options?: Options,
+    callback?: Callback,
+  ): Promise<Context> {
+    return this._s.client.track(eventName, properties, options, callback);
   }
 }
