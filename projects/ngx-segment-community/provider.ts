@@ -3,6 +3,7 @@ import {
   InjectionToken,
   makeEnvironmentProviders,
 } from '@angular/core';
+import { SegmentService } from './segment';
 
 export interface SegmentAnalyticsConfiguration {
   /**
@@ -44,5 +45,6 @@ export function provideSegmentAnalytics(
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     { provide: SEGMENT_ANALYTICS_SETTINGS, useValue: config },
+    SegmentService,
   ]);
 }
