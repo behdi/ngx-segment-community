@@ -152,4 +152,55 @@ export class SegmentService {
   ): Promise<Analytics> {
     return this._s.client.trackLink(linkEls, event, properties, options);
   }
+
+  /**
+   * Allows you to record page views on your application, along with optional extra information
+   * about the page viewed by the user.
+   *
+   * When you trigger a Page call, make sure the call happens after the UI element are successfully displayed,
+   * not when it is called. It **shouldn't** be called as part of the click event that initiates it.
+   *
+   *
+   * @param categoryOrName - The category of the page. Useful for cases like e-commerce where many pages might
+   * live under a single category. Note that if you pass a value to this parameter, but not to the next one, it will
+   * be considered as `name`. This parameter will only be considered to be category IF you pass a value for the
+   * second parameter as well.
+   * @param [name] - The name of the page.
+   * @param [properties] - A dictionary of properties of the page. Note: Analytics.js collects `url`, `title`, `referrer`,
+   * and `path` automatically. This defaults to a canonical url, if available, and falls back to `document.location.href`.
+   * For the most part, you need to set `referrer` and `title` manually but the rest of the values will be properly
+   * filled.
+   * @param [options] - A dictionary of options. For example, enable or disable specific destinations for the call.
+   * @param [callback] - A function executed after a timeout of 300 ms, giving the browser time to make outbound requests
+   * first.
+   * @returns A promise that resolves to a dispatched event.
+   *
+   * @example
+   * analytics.page('Pricing', {
+   *  // automatically set, you can override like so
+   *  url: 'https://segment.com/pricing',
+   *  path: '/pricing',
+   *
+   *  // You need to manually set these:
+   *  title: 'Segment Pricing',
+   *  referrer: 'https://segment.com/warehouses'
+   * });
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#page | Page Docs}
+   */
+  public page(
+    categoryOrName: string,
+    name?: string,
+    properties?: EventProperties,
+    options?: Options,
+    callback?: Callback,
+  ): Promise<Context> {
+    return this._s.client.page(
+      categoryOrName,
+      name,
+      properties,
+      options,
+      callback,
+    );
+  }
 }
