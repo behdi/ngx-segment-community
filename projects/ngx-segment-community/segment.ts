@@ -1,5 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import {
+  GroupTraits,
   type Analytics,
   type Callback,
   type Context,
@@ -202,5 +203,44 @@ export class SegmentService {
       options,
       callback,
     );
+  }
+
+  /**
+   * Associates an identified user with a company, organization, project, workspace, team, tribe, platoon,
+   * assemblage, cluster, troop, gang, party, society, or any other collective noun you come up with.
+   *
+   * The Group call enables you to identify what account or organization your users are part of. A user can
+   * be in more than one group which would mean different `groupId`s, but the user will only have one `userId`
+   *  that is associated to each of the different groups.
+   *
+   * **Keep in mind that not all platforms support multiple groups for a single user.**
+   *
+   * @param groupId - The Group ID to associate with the current user, which should be a unique identifier for the group
+   * in your database.
+   * @param [traits] - A dictionary of traits containing the pieces of information you know about a group. Example traits
+   * for a group include `address`, `website` and `employees`.
+   * Can be some of the reserved traits, or any custom ones. Only use reserved traits for their intended meaning.
+   * @param [options] - A dictionary of options. For example, enable or disable specific destinations for the call.
+   * @param [callback] - A function executed after a timeout of 300 ms, giving the browser time to make outbound requests
+   * first.
+   * @returns A promise that resolves to the dispatched event.
+   *
+   * @example
+   * analytics.group('gruppe-sechs', {
+   *  site: 'Vice City, Florida',
+   *  statedGoals: 'Security by any means necessary',
+   *  industry: 'Security'
+   * });
+   *
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#group | Group Docs}
+   */
+  public group(
+    groupId: string,
+    traits?: GroupTraits,
+    options?: Options,
+    callback?: Callback,
+  ): Promise<Context> {
+    return this._s.client.group(groupId, traits, options, callback);
   }
 }
