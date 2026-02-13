@@ -243,4 +243,31 @@ export class SegmentService {
   ): Promise<Context> {
     return this._s.client.group(groupId, traits, options, callback);
   }
+
+  /**
+   * Combines 2 unassociated user identities.
+   *
+   * This is an advanced method used to merge 2 unassociated user identities, effectively connecting 2 sets of
+   * user data in one profile.
+   *
+   * **NOTE:**
+   * Segment usually handles aliasing automatically when you call Identify on a user, however some tools
+   * such as Mixpanel or Kissmeterics require an explicit Alias call. Because this method allows you to change the ID
+   * of a tracked user, it should  really only be done when it's required for downstream destination compatibility.
+   *
+   * @param userId - The new user ID you want to associate with the user.
+   * @param [previousId] -The previous ID that the user was recognized by. This defaults to the currently identified user's ID.
+   * @param [options] - A dictionary of options. For example, enable or disable specific destinations for the call.
+   * @param [callback] - A function executed after a timeout of 300 ms, giving the browser time to make outbound requests
+   * first.
+   * @see {@link https://www.twilio.com/docs/segment/connections/spec/alias | Alias Spec}
+   */
+  public alias(
+    userId: string,
+    previousId?: string,
+    options?: Options,
+    callback?: Callback,
+  ): Promise<Context> {
+    return this._s.client.alias(userId, previousId, options, callback);
+  }
 }
