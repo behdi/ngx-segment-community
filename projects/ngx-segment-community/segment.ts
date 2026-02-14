@@ -270,4 +270,33 @@ export class SegmentService {
   ): Promise<Context> {
     return this._s.client.alias(userId, previousId, options, callback);
   }
+
+  /**
+   * Allows you to execute a method that gets called after Analytics.js finishes initializing
+   * AND after all enabled device-mode destinations load.
+   *
+   * Because it doesn't fire until all enabled device-mode destinations are loaded, it can't be used
+   * to change configuration options for downstream SDKs. That can only be done if the SDK is loaded natively.
+   *
+   * The method isn't invoked if _any_ destination throws an error (e.g. due to an expired key, incorrect config or
+   * even a destination being blocked by the browser).
+   *
+   * Note that if you want to check when Analytics.js has loaded, you can look at the value of the {@link initialized} signal.
+   * When this value is true, the library has successfully initialized, even if some destinations are blocked.
+   *
+   * If you want to access end-tool library methods that do not match any Analytics.js methods, like adding an extra setting to
+   * Mixpanel, you can use a ready callback so that you're guaranteed to have access to the Mixpanel object, like so:
+   * ```ts
+   * analytics.whenReady(() => {
+   *  window.mixpanel.set_config({ verbose: true });
+   * });
+   * ```
+   *
+   * @param callback - A function to be executed after all enabled destinations have loaded.
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#ready | Ready Docs}
+   */
+  public whenReady(callback: Callback): Promise<unknown> {
+    return this._s.client.ready(callback);
+  }
 }
