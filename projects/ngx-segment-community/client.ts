@@ -1,8 +1,9 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import {
   AnalyticsBrowser,
   type AnalyticsBrowserSettings,
 } from '@segment/analytics-next';
+import { SEGMENT_ANALYTICS_SETTINGS } from './provider';
 
 /**
  * The internal singleton driver for Segment Analytics.
@@ -20,6 +21,8 @@ import {
   providedIn: 'root',
 })
 export class SegmentClient {
+  private readonly _config = inject(SEGMENT_ANALYTICS_SETTINGS);
+
   /** The raw Segment Analytics browser instance. */
   private readonly _browser = new AnalyticsBrowser();
 
@@ -62,6 +65,8 @@ export class SegmentClient {
    * @param settings - The Segment configuration object (must include `writeKey`).
    */
   initialize(settings: AnalyticsBrowserSettings) {
+    const { timeout } = this._config;
+
     if (this._isLoading()) return;
     if (this._isReady()) {
       console.warn('[Segment] Already initialized. Skipping.');
@@ -71,8 +76,10 @@ export class SegmentClient {
 
     this._browser
       .load({ ...settings })
-      .then(() => {
+      .then(([analytics]) => {
         this._isReady.set(true);
+
+        if (typeof timeout === 'number') analytics.timeout(timeout);
       })
       .catch((e: unknown) => {
         console.error('[Segment] Initialization failed', e);
