@@ -70,6 +70,7 @@ export class SegmentClient {
     if (this._isLoading()) return;
     if (this._isReady()) {
       console.warn('[Segment] Already initialized. Skipping.');
+      return;
     }
 
     this._isLoading.set(true);
@@ -78,6 +79,7 @@ export class SegmentClient {
       .load({ ...settings })
       .then(([analytics]) => {
         this._isReady.set(true);
+        this._hasError.set(false);
 
         // Apply global configs directly to the guaranteed-ready instance
         if (typeof timeout === 'number') analytics.timeout(timeout);
