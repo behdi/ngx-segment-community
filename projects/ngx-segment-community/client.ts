@@ -65,7 +65,7 @@ export class SegmentClient {
    * @param settings - The Segment configuration object (must include `writeKey`).
    */
   initialize(settings: AnalyticsBrowserSettings) {
-    const { timeout } = this._config;
+    const { timeout, debug } = this._config;
 
     if (this._isLoading()) return;
     if (this._isReady()) {
@@ -79,7 +79,9 @@ export class SegmentClient {
       .then(([analytics]) => {
         this._isReady.set(true);
 
+        // Apply global configs directly to the guaranteed-ready instance
         if (typeof timeout === 'number') analytics.timeout(timeout);
+        analytics.debug(!!debug);
       })
       .catch((e: unknown) => {
         console.error('[Segment] Initialization failed', e);
