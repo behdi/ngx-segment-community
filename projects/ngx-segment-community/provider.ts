@@ -36,6 +36,18 @@ export interface SegmentAnalyticsConfiguration {
    * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#debug | Debug Docs}
    */
   debug?: boolean;
+
+  /**
+   * Specifies the length (in milliseconds) of callbacks and helper functions.
+   *
+   * Useful if you have multiple scripts that need to fire in your callback, or the `trackLink` functions.
+   *
+   * **NOTE:**
+   * If you're triggering ad network conversion pixels, Segment recommends extending timeout to 500 ms to account for slow load times.
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#extending-timeout | Timeout Docs}
+   */
+  timeout?: number;
 }
 
 export const SEGMENT_ANALYTICS_SETTINGS =
