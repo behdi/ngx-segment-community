@@ -299,4 +299,22 @@ export class SegmentService {
   public whenReady(callback: Callback): Promise<unknown> {
     return this._s.client.ready(callback);
   }
+
+  /**
+   * Resets the `id`, including `anonymousId`, and clears `traits` for the currently identified user and group.
+   *
+   * You must call this method exactly when a user logs out of your application. If you fail to call `reset`, the
+   * next user who logs into this browser instance will inherit the previous user's tracking history and traits,
+   * resulting in severe data corruption and potential privacy violations.
+   *
+   * **NOTE:**
+   * The `reset` method only clears the cookies and `localStorage` created by Segment. It does not clear data from
+   * other integrated tools, as those native libraries might set their own cookies to manage user tracking, sessions,
+   * and manage state. To completely clear out the user session, see the documentation provided by those tools.
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#reset-or-log-out | Reset Docs}
+   */
+  public reset(): Promise<void> {
+    return this._s.client.reset();
+  }
 }
