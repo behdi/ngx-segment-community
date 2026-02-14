@@ -27,6 +27,15 @@ export interface SegmentAnalyticsConfiguration {
    * is required to start tracking.
    */
   initializationMode?: 'manual' | 'automatic';
+
+  /**
+   * Indicates whether debug mode should be turned on.
+   *
+   * Debug mode logs helpful messages in the console.
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#debug | Debug Docs}
+   */
+  debug?: boolean;
 }
 
 export const SEGMENT_ANALYTICS_SETTINGS =

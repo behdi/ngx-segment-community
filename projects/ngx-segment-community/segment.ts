@@ -37,6 +37,9 @@ export class SegmentService {
   constructor() {
     const mode = this._config.initializationMode ?? 'automatic';
     if (mode === 'automatic') this.initialize();
+
+    const isDebugMode = !!this._config.debug;
+    this._setDebugMode(isDebugMode);
   }
 
   /**
@@ -298,5 +301,16 @@ export class SegmentService {
    */
   public whenReady(callback: Callback): Promise<unknown> {
     return this._s.client.ready(callback);
+  }
+
+  /**
+   * Calling the Debug method turns on debug mode, which logs helpful messages to the console.
+   *
+   * Subsequent Segment events generate messages in the developer console after you invoke debug.
+   *
+   * @param debugMode - whether debug mode should be turned on or off.
+   */
+  private _setDebugMode(debugMode: boolean): void {
+    void this._s.client.debug(debugMode);
   }
 }
