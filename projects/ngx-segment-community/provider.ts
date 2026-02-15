@@ -55,8 +55,19 @@ export interface SegmentAnalyticsConfiguration {
    * If set to `true`, all analytics method calls will be a no-op, and no network calls will be initiated.
    *
    * For testing or staging environments, it can be useful to disable your SDK to ensure no events are sent.
+   *
+   * Defaults to `false`.
    */
   disable?: boolean;
+
+  /**
+   * Obfuscates the URL from which your integrations and destination actions are loaded. This can help prevent
+   * words that are flagged by ad blockers to not be detected in your URL, enabling the integration to properly
+   * load.
+   *
+   * Defaults to `false`.
+   */
+  obfuscate?: boolean;
 }
 
 export const SEGMENT_ANALYTICS_SETTINGS =
