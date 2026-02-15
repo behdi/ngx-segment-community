@@ -53,10 +53,13 @@ export class SegmentService {
    * - It does **NOT** throw an error, making it safe to call multiple times.
    */
   public initialize(): void {
-    this._s.initialize({
-      writeKey: this._config.writeKey,
-      cdnURL: this._config.cdnURL,
-    });
+    this._s.initialize(
+      {
+        writeKey: this._config.writeKey,
+        cdnURL: this._config.cdnURL,
+      },
+      { disable: !!this._config.disable },
+    );
   }
 
   /**
