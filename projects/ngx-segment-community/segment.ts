@@ -58,7 +58,7 @@ export class SegmentService {
         writeKey: this._config.writeKey,
         cdnURL: this._config.cdnURL,
       },
-      { disable: !!this._config.disable },
+      { disable: !!this._config.disable, obfuscate: !!this._config.obfuscate },
     );
   }
 
