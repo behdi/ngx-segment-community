@@ -13,6 +13,7 @@ import {
 } from '@segment/analytics-next';
 import {
   SEGMENT_ANALYTICS_SETTINGS,
+  SEGMENT_DESTINATION_MIDDLEWARE,
   SEGMENT_SOURCE_MIDDLEWARE,
 } from './provider';
 
@@ -37,6 +38,10 @@ export class SegmentClient {
   private readonly _sourceMiddlewares = inject(SEGMENT_SOURCE_MIDDLEWARE, {
     optional: true,
   });
+  private readonly _destinationMiddlewares = inject(
+    SEGMENT_DESTINATION_MIDDLEWARE,
+    { optional: true },
+  );
 
   /** The raw Segment Analytics browser instance. */
   private readonly _browser = new AnalyticsBrowser();
@@ -73,9 +78,11 @@ export class SegmentClient {
    *
    * Performs the following:
    * - Registers source middlewares (if there are any)
+   * - Registers destination middlewares (if there are any)
    */
   constructor() {
     this._registerSourceMiddlewares();
+    this._registerDestinationMiddlewares();
   }
 
   /**
@@ -122,7 +129,7 @@ export class SegmentClient {
     if (!this._sourceMiddlewares?.length) return;
 
     const injectableSourceMiddlewares = this._sourceMiddlewares.map((fn) =>
-      runInInjectionContext(this._injector, () => fn()),
+      runInInjectionContext(this._injector, fn),
     );
 
     injectableSourceMiddlewares.forEach((fn) => {
@@ -130,7 +137,31 @@ export class SegmentClient {
         .addSourceMiddleware(fn)
         .catch((e: unknown) =>
           console.error(
-            'Segment] Source middleware registration failed with error:',
+            '[Segment] Source middleware registration failed with error:',
+            e,
+          ),
+        );
+    });
+  }
+
+  private _registerDestinationMiddlewares(): void {
+    if (!this._destinationMiddlewares?.length) return;
+
+    const destMiddlewares = this._destinationMiddlewares.map(
+      ({ integrationName, middlewares }) => ({
+        integrationName,
+        middlewares: middlewares.map((fn) =>
+          runInInjectionContext(this._injector, fn),
+        ),
+      }),
+    );
+
+    destMiddlewares.forEach(({ integrationName, middlewares }) => {
+      this.client
+        .addDestinationMiddleware(integrationName, ...middlewares)
+        .catch((e: unknown) =>
+          console.error(
+            '[Segment] Destination middleware registration failed with error:',
             e,
           ),
         );
