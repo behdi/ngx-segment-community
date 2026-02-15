@@ -3,8 +3,9 @@ import {
   InjectionToken,
   makeEnvironmentProviders,
 } from '@angular/core';
-import { type MiddlewareFunction } from '@segment/analytics-next';
+import type { MiddlewareFunction } from '@segment/analytics-next';
 import type { IntegrationsInitOptions } from '@segment/analytics-next/dist/types/browser/settings';
+import type { DestinationMiddlewareFunction } from '@segment/analytics-next/dist/types/plugins/middleware';
 import { SegmentService } from './segment';
 
 export interface SegmentAnalyticsConfiguration {
@@ -102,6 +103,17 @@ export type SegmentSourceMiddlewareFn = () => MiddlewareFunction;
 export const SEGMENT_SOURCE_MIDDLEWARE = new InjectionToken<
   SegmentSourceMiddlewareFn[]
 >('[ngx-segment-community] Source Middleware');
+
+export interface SegmentDestinationMiddlewareFn {
+  integrationName: string;
+
+  // eslint-disable-next-line @typescript-eslint/array-type
+  middlewares: Array<() => DestinationMiddlewareFunction>;
+}
+
+export const SEGMENT_DESTINATION_MIDDLEWARE = new InjectionToken<
+  SegmentDestinationMiddlewareFn[]
+>('[ngx-segment-community] Destination Middleware');
 
 /**
  * Configures and initializes the Segment Analytics integration.
