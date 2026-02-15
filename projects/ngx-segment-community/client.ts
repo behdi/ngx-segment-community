@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import {
   AnalyticsBrowser,
   type AnalyticsBrowserSettings,
+  type InitOptions,
 } from '@segment/analytics-next';
 import { SEGMENT_ANALYTICS_SETTINGS } from './provider';
 
@@ -63,8 +64,9 @@ export class SegmentClient {
    * They are NOT re-thrown, ensuring the application boot process is not interrupted.
    *
    * @param settings - The Segment configuration object (must include `writeKey`).
+   * @param options - Extra options when initializing segment.
    */
-  initialize(settings: AnalyticsBrowserSettings) {
+  initialize(settings: AnalyticsBrowserSettings, options: InitOptions) {
     const { timeout, debug } = this._config;
 
     if (this._isLoading()) return;
@@ -76,7 +78,7 @@ export class SegmentClient {
     this._isLoading.set(true);
 
     this._browser
-      .load({ ...settings })
+      .load({ ...settings }, { ...options })
       .then(([analytics]) => {
         this._isReady.set(true);
         this._hasError.set(false);

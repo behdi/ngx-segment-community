@@ -48,6 +48,15 @@ export interface SegmentAnalyticsConfiguration {
    * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#extending-timeout | Timeout Docs}
    */
   timeout?: number;
+
+  /**
+   * Whether event sending should be disabled.
+   *
+   * If set to `true`, all analytics method calls will be a no-op, and no network calls will be initiated.
+   *
+   * For testing or staging environments, it can be useful to disable your SDK to ensure no events are sent.
+   */
+  disable?: boolean;
 }
 
 export const SEGMENT_ANALYTICS_SETTINGS =
