@@ -1,10 +1,20 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import {
+  computed,
+  inject,
+  Injectable,
+  Injector,
+  runInInjectionContext,
+  signal,
+} from '@angular/core';
 import {
   AnalyticsBrowser,
   type AnalyticsBrowserSettings,
   type InitOptions,
 } from '@segment/analytics-next';
-import { SEGMENT_ANALYTICS_SETTINGS } from './provider';
+import {
+  SEGMENT_ANALYTICS_SETTINGS,
+  SEGMENT_SOURCE_MIDDLEWARE,
+} from './provider';
 
 /**
  * The internal singleton driver for Segment Analytics.
@@ -23,6 +33,10 @@ import { SEGMENT_ANALYTICS_SETTINGS } from './provider';
 })
 export class SegmentClient {
   private readonly _config = inject(SEGMENT_ANALYTICS_SETTINGS);
+  private readonly _injector = inject(Injector);
+  private readonly _sourceMiddlewares = inject(SEGMENT_SOURCE_MIDDLEWARE, {
+    optional: true,
+  });
 
   /** The raw Segment Analytics browser instance. */
   private readonly _browser = new AnalyticsBrowser();
@@ -53,6 +67,16 @@ export class SegmentClient {
    * Use this to call `track`, `identify`, etc.
    */
   readonly client = this._browser;
+
+  /**
+   * Creates an instance of SegmentClient.
+   *
+   * Performs the following:
+   * - Registers source middlewares (if there are any)
+   */
+  constructor() {
+    this._registerSourceMiddlewares();
+  }
 
   /**
    * Initializes the Segment Analytics browser with the provided settings.
@@ -92,5 +116,24 @@ export class SegmentClient {
         this._hasError.set(true);
       })
       .finally(() => this._isLoading.set(false));
+  }
+
+  private _registerSourceMiddlewares(): void {
+    if (!this._sourceMiddlewares?.length) return;
+
+    const injectableSourceMiddlewares = this._sourceMiddlewares.map((fn) =>
+      runInInjectionContext(this._injector, () => fn()),
+    );
+
+    injectableSourceMiddlewares.forEach((fn) => {
+      this.client
+        .addSourceMiddleware(fn)
+        .catch((e: unknown) =>
+          console.error(
+            'Segment] Source middleware registration failed with error:',
+            e,
+          ),
+        );
+    });
   }
 }
