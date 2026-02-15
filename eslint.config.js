@@ -245,6 +245,13 @@ module.exports = tseslint.config(
       ],
       "@typescript-eslint/prefer-readonly": "error",
       "@typescript-eslint/require-array-sort-compare": "error",
+      "@typescript-eslint/array-type": [
+        "error",
+        {
+          default: "array-simple",
+          readonly: "array-simple",
+        },
+      ],
 
       // SonjarJS overrides
       "sonarjs/no-duplicate-string": "off",

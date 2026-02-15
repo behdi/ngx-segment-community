@@ -6,6 +6,15 @@ export * from './window-wrapper';
 // Modern implementation
 export {
   provideSegmentAnalytics,
-  type SegmentAnalyticsConfiguration,
+  withDestinationMiddlewares,
+  withPlugins,
+  withSettings,
+  withSourceMiddlewares,
+  type SegmentAnalyticsSettings,
+  type SegmentDestinationMiddlewareFn,
+  type SegmentFeatures,
+  type SegmentPluginFn,
+  type SegmentSettings,
+  type SegmentSourceMiddlewareFn,
 } from './provider';
 export { SegmentService as NewSegmentService } from './segment';
