@@ -61,6 +61,7 @@ export class SegmentService {
       {
         disable: !!this._config.disable,
         obfuscate: !!this._config.obfuscate,
+        disableAutoISOConversion: !!this._config.disableAutoISOConversion,
         integrations: this._config.integrations,
       },
     );
