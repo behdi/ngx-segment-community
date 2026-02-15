@@ -3,6 +3,7 @@ import {
   InjectionToken,
   makeEnvironmentProviders,
 } from '@angular/core';
+import type { IntegrationsInitOptions } from '@segment/analytics-next/dist/types/browser/settings';
 import { SegmentService } from './segment';
 
 export interface SegmentAnalyticsConfiguration {
@@ -68,6 +69,19 @@ export interface SegmentAnalyticsConfiguration {
    * Defaults to `false`.
    */
   obfuscate?: boolean;
+
+  /**
+   * Allows you to customize your integrations with various data.
+   *
+   * For example, you can configure the delivery strategy of segment, by adding a header
+   * to all the requests that are sent to the integration, or you can configure things
+   * such as keepalive or batching.
+   *
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#delivery-strategy-configuration | Delivery Strategy Configuration}
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#keepalive | Keepalive Configuration}
+   * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#batching | Batching Configuration}
+   */
+  integrations?: IntegrationsInitOptions;
 }
 
 export const SEGMENT_ANALYTICS_SETTINGS =
