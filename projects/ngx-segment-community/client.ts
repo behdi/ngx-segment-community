@@ -14,6 +14,7 @@ import {
 import {
   SEGMENT_ANALYTICS_SETTINGS,
   SEGMENT_DESTINATION_MIDDLEWARE,
+  SEGMENT_PLUGIN,
   SEGMENT_SOURCE_MIDDLEWARE,
 } from './provider';
 
@@ -42,6 +43,7 @@ export class SegmentClient {
     SEGMENT_DESTINATION_MIDDLEWARE,
     { optional: true },
   );
+  private readonly _plugins = inject(SEGMENT_PLUGIN, { optional: true });
 
   /** The raw Segment Analytics browser instance. */
   private readonly _browser = new AnalyticsBrowser();
@@ -83,6 +85,7 @@ export class SegmentClient {
   constructor() {
     this._registerSourceMiddlewares();
     this._registerDestinationMiddlewares();
+    this._registerPlugins();
   }
 
   /**
@@ -162,6 +165,25 @@ export class SegmentClient {
         .catch((e: unknown) =>
           console.error(
             '[Segment] Destination middleware registration failed with error:',
+            e,
+          ),
+        );
+    });
+  }
+
+  private _registerPlugins() {
+    if (!this._plugins?.length) return;
+
+    const plugins = this._plugins.map((pluginFactoryFn) =>
+      runInInjectionContext(this._injector, pluginFactoryFn),
+    );
+
+    plugins.forEach((p) => {
+      this.client
+        .register(p)
+        .catch((e: unknown) =>
+          console.error(
+            `[Segment] Could not register plugin "${p.name}" due to the following error:`,
             e,
           ),
         );
