@@ -82,6 +82,14 @@ export interface SegmentAnalyticsConfiguration {
    * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#batching | Batching Configuration}
    */
   integrations?: IntegrationsInitOptions;
+
+  /**
+   * Allows you to disable the auto-conversion of ISO8061 strings to a Date object before passing it to downstream
+   * device-mode integrations.
+   *
+   * You can set this value to `true` if you'd like to send those strings as they are passed to the event.
+   */
+  disableAutoISOConversion?: boolean;
 }
 
 export const SEGMENT_ANALYTICS_SETTINGS =
