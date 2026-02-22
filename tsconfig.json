@@ -35,6 +35,12 @@
     },
     {
       "path": "./projects/ngx-segment-community/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/playground/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/playground/tsconfig.spec.json"
     }
   ]
 }
