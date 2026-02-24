@@ -1,3 +1,17 @@
 :host {
   display: block;
 }
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  mat-card {
+    flex: 1;
+  }
+
+  mat-card-content {
+    flex: 1;
+  }
+}
