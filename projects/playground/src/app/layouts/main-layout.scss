@@ -1,0 +1,51 @@
+@use "@angular/material" as mat;
+
+:host {
+  background-color: var(--mat-sys-surface);
+  display: grid;
+  grid-template:
+    "header header" minmax(min-content, max-content)
+    "sidebar content" 1fr / auto minmax(0, 1fr);
+  height: 100%;
+
+  @include mat.sidenav-overrides(
+    (
+      container-divider-color: var(--mat-sys-outline-variant),
+      container-width: 200px,
+      container-shape: 0px,
+    )
+  );
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: var(--mat-sys-secondary-container),
+    )
+  );
+}
+
+.header-container {
+  grid-area: header;
+  height: var(--mat-toolbar-standard-height);
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.main-content {
+  grid-area: content;
+  height: calc(100vh - var(--mat-toolbar-standard-height));
+  display: flex;
+  flex-direction: column;
+
+  .content-container {
+    padding: 0.5rem;
+    max-height: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+}
