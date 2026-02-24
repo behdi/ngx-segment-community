@@ -4,7 +4,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 /**
  * Component responsible for displaying the main layout
@@ -18,6 +18,8 @@ import { RouterOutlet } from '@angular/router';
     MatIcon,
     MatIconButton,
     MatListModule,
+    RouterLink,
+    RouterLinkActive,
   ],
   styleUrl: './main-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,7 +37,13 @@ import { RouterOutlet } from '@angular/router';
     <mat-drawer-container class="sidebar">
       <mat-drawer mode="side" opened>
         <mat-nav-list>
-          <a mat-list-item href="...">Sample Item</a>
+          <a mat-list-item routerLink="/main" routerLinkActive="active">
+            Home
+          </a>
+
+          <a mat-list-item routerLink="/about" routerLinkActive="active">
+            About
+          </a>
         </mat-nav-list>
       </mat-drawer>
     </mat-drawer-container>
