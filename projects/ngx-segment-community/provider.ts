@@ -225,11 +225,11 @@ export function withSourceMiddlewares(
   sourceMiddlewares: SegmentSourceMiddlewareFn[],
 ) {
   return makeSegmentConfig(SegmentConfigKind.SMiddleware, [
-    {
+    ...sourceMiddlewares.map((sm) => ({
       provide: SEGMENT_SOURCE_MIDDLEWARE,
-      useValue: sourceMiddlewares,
+      useValue: sm satisfies SegmentSourceMiddlewareFn,
       multi: true,
-    },
+    })),
   ]);
 }
 
@@ -304,11 +304,11 @@ export function withDestinationMiddlewares(
   destinationMiddlewares: SegmentDestinationMiddlewareFn[],
 ) {
   return makeSegmentConfig(SegmentConfigKind.DMiddleware, [
-    {
+    ...destinationMiddlewares.map((dm) => ({
       provide: SEGMENT_DESTINATION_MIDDLEWARE,
-      useValue: destinationMiddlewares,
+      useValue: dm satisfies SegmentDestinationMiddlewareFn,
       multi: true,
-    },
+    })),
   ]);
 }
 
@@ -367,11 +367,11 @@ export const SEGMENT_PLUGIN = new InjectionToken<SegmentPluginFn[]>(
  */
 export function withPlugins(plugins: SegmentPluginFn[]) {
   return makeSegmentConfig(SegmentConfigKind.Plugin, [
-    {
+    ...plugins.map((p) => ({
       provide: SEGMENT_PLUGIN,
-      useValue: plugins,
+      useValue: p satisfies SegmentPluginFn,
       multi: true,
-    },
+    })),
   ]);
 }
 
