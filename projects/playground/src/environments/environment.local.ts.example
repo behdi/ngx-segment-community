@@ -1,0 +1,15 @@
+/**
+ * If `ng serve` does not work for you:
+ *  - Copy this file
+ *  - Remove the .example prefix
+ *  - Add your real world segment writeKey here
+ *
+ * Then re-run `ng s`. We chose this approach just to make sure
+ * no one hastily commits their segment write key.
+ */
+
+import type { Environment } from "./type";
+
+export const environment: Environment = {
+  SEGMENT_API_KEY: "YOUR_REAL_WRITE_KEY",
+};
