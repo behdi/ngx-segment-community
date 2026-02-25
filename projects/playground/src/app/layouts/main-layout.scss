@@ -1,11 +1,12 @@
 @use "@angular/material" as mat;
+@use "../../mixins" as m;
 
 :host {
   background-color: var(--mat-sys-surface);
   display: grid;
   grid-template:
-    "header header" minmax(min-content, max-content)
-    "sidebar content" 1fr / auto minmax(0, 1fr);
+    "header" minmax(min-content, max-content)
+    "main" 1fr / auto;
   height: 100%;
 
   @include mat.sidenav-overrides(
@@ -32,8 +33,8 @@
   }
 }
 
-.sidebar {
-  grid-area: sidebar;
+.main-content-container {
+  grid-area: main;
 
   mat-nav-list {
     display: flex;
@@ -47,8 +48,6 @@
 }
 
 .main-content {
-  grid-area: content;
-  height: calc(100vh - var(--mat-toolbar-standard-height));
   display: flex;
   flex-direction: column;
 
@@ -57,5 +56,61 @@
     max-height: 100%;
     height: 100%;
     overflow-y: auto;
+
+    @include m.stealth-scrollbar;
+  }
+}
+
+.sidebar-event-feed {
+  @include mat.sidenav-overrides(
+    (
+      container-width: 350px,
+    )
+  );
+
+  .container {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    place-content: start;
+    gap: 1rem;
+    padding-inline: 0.5rem;
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .event-dump {
+    @include m.stealth-scrollbar;
+
+    max-height: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    .empty-text {
+      color: var(--mat-sys-outline);
+      font-style: italic;
+    }
+
+    pre {
+      background-color: var(--mat-sys-surface-container-highest);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      overflow-x: auto;
+      @include m.stealth-scrollbar;
+    }
   }
 }
