@@ -31,9 +31,6 @@ import { EventFeed } from '../services/event-feed';
       <mat-toolbar>
         <span>ngx-segment-community</span>
         <span class="spacer"></span>
-        <button matIconButton aria-label="Log out button">
-          <mat-icon>logout</mat-icon>
-        </button>
       </mat-toolbar>
     </header>
 
