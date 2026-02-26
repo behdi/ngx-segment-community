@@ -224,11 +224,17 @@ export class AboutPage {
   }
 
   protected onAddToCart(product: Product): void {
-    void this._segment.track('Product Added', {
-      product_id: product.id,
-      name: product.title,
-      price: product.price,
-    });
+    void this._segment.track(
+      'Product Added',
+      {
+        product_id: product.id,
+        name: product.title,
+        price: product.price,
+      },
+      {
+        context: { requiresCurrency: true },
+      },
+    );
   }
 
   protected onCheckout(): void {

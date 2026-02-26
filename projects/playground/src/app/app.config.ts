@@ -13,7 +13,7 @@ import {
 import { env } from '../environments';
 import { routes } from './app.routes';
 import { PIIHasherMiddleware } from './middlewares';
-import { LiveFeedInterceptorPlugin } from './plugins';
+import { CurrencyInjectorPlugin, LiveFeedInterceptorPlugin } from './plugins';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
         initializationMode: 'manual',
         debug: true,
       }),
-      withPlugins([LiveFeedInterceptorPlugin]),
+      withPlugins([CurrencyInjectorPlugin, LiveFeedInterceptorPlugin]),
       withSourceMiddlewares([PIIHasherMiddleware]),
     ),
   ],
