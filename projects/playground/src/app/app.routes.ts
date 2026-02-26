@@ -12,9 +12,9 @@ export const routes: Routes = [
           import('./pages/main-page').then((c) => c.MainPage),
       },
       {
-        path: 'about',
+        path: 'storefront',
         loadComponent: () =>
-          import('./pages/about-page').then((c) => c.AboutPage),
+          import('./pages/storefront-page').then((c) => c.AboutPage),
       },
       { path: '**', redirectTo: 'main' },
     ],

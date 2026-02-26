@@ -201,7 +201,7 @@ const MOCK_PRODUCTS: Product[] = [
       </mat-card>
     </div>
   `,
-  styleUrl: './about-page.scss',
+  styleUrl: './storefront-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutPage {

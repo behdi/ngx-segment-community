@@ -44,8 +44,8 @@ import { EventFeed } from '../services/event-feed';
             Home
           </a>
 
-          <a mat-list-item routerLink="/about" routerLinkActive="active">
-            About
+          <a mat-list-item routerLink="/storefront" routerLinkActive="active">
+            Storefront
           </a>
         </mat-nav-list>
       </mat-drawer>
