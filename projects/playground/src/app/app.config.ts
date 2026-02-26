@@ -8,9 +8,11 @@ import {
   provideSegmentAnalytics,
   withPlugins,
   withSettings,
+  withSourceMiddlewares,
 } from 'ngx-segment-community';
 import { env } from '../environments';
 import { routes } from './app.routes';
+import { PIIHasherMiddleware } from './middlewares';
 import { LiveFeedInterceptorPlugin } from './plugins';
 
 export const appConfig: ApplicationConfig = {
@@ -27,6 +29,7 @@ export const appConfig: ApplicationConfig = {
         debug: true,
       }),
       withPlugins([LiveFeedInterceptorPlugin]),
+      withSourceMiddlewares([PIIHasherMiddleware]),
     ),
   ],
 };
