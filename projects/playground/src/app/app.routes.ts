@@ -13,6 +13,7 @@ export const routes: Routes = [
       },
       {
         path: 'storefront',
+        data: { segmentAnalyticsProperties: { on_call: true } },
         loadComponent: () =>
           import('./pages/storefront-page').then((c) => c.AboutPage),
       },
