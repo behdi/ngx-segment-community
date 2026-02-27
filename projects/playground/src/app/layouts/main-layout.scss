@@ -1,0 +1,116 @@
+@use "@angular/material" as mat;
+@use "../../mixins" as m;
+
+:host {
+  background-color: var(--mat-sys-surface);
+  display: grid;
+  grid-template:
+    "header" minmax(min-content, max-content)
+    "main" 1fr / auto;
+  height: 100%;
+
+  @include mat.sidenav-overrides(
+    (
+      container-divider-color: var(--mat-sys-outline-variant),
+      container-width: 200px,
+      container-shape: 0px,
+    )
+  );
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: var(--mat-sys-secondary-container),
+    )
+  );
+}
+
+.header-container {
+  grid-area: header;
+  height: var(--mat-toolbar-standard-height);
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.main-content-container {
+  grid-area: main;
+
+  mat-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .active {
+      background-color: var(--mat-sys-secondary-container);
+    }
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+
+  .content-container {
+    padding: 0.5rem;
+    max-height: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    @include m.stealth-scrollbar;
+  }
+}
+
+.sidebar-event-feed {
+  @include mat.sidenav-overrides(
+    (
+      container-width: 350px,
+    )
+  );
+
+  .container {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    place-content: start;
+    gap: 1rem;
+    padding-inline: 0.5rem;
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .event-dump {
+    @include m.stealth-scrollbar;
+
+    max-height: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    .empty-text {
+      color: var(--mat-sys-outline);
+      font-style: italic;
+    }
+
+    pre {
+      background-color: var(--mat-sys-surface-container-highest);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      overflow-x: auto;
+      @include m.stealth-scrollbar;
+    }
+  }
+}
