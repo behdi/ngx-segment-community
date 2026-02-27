@@ -2,8 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
+  ElementRef,
   inject,
   signal,
+  untracked,
+  viewChild,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import {
@@ -99,6 +103,21 @@ type AuthState = 'IDLE' | 'LOGGED_IN' | 'LOGGED_OUT' | 'ERROR';
           <button matButton (click)="onTrack()">Track something!</button>
         </mat-card-actions>
       </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>Track Link</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            Test whether trackLink correctly binds to a DOM element and delays
+            navigation.
+          </p>
+          <a #outboundLink mat-button href="https://segment.com">
+            Go to Segment (External)
+          </a>
+        </mat-card-content>
+      </mat-card>
     </div>
   `,
   styleUrl: './main-page.scss',
@@ -106,7 +125,12 @@ type AuthState = 'IDLE' | 'LOGGED_IN' | 'LOGGED_OUT' | 'ERROR';
 })
 export class MainPage {
   private readonly _segment = inject(SegmentService);
+
   private readonly _authState = signal<AuthState>('IDLE');
+  private readonly _outboundLink = viewChild.required<
+    MatButton,
+    ElementRef<HTMLAnchorElement>
+  >('outboundLink', { read: ElementRef<HTMLAnchorElement> });
 
   protected readonly currentInitializationState = this._segment.initialized;
   protected readonly isLoggedIn = computed(
@@ -115,6 +139,11 @@ export class MainPage {
   protected readonly isLoggedOut = computed(
     () => this._authState() === 'LOGGED_OUT',
   );
+
+  /** */
+  constructor() {
+    this._registerOutboundLinkTracking();
+  }
 
   protected onInitialize() {
     this._segment.initialize();
@@ -150,5 +179,21 @@ export class MainPage {
 
   protected onTrack() {
     void this._segment.track('Testing tack method', { place: 'test-card' });
+  }
+
+  private _registerOutboundLinkTracking() {
+    effect(() => {
+      const anchor = this._outboundLink();
+
+      untracked(() => {
+        void this._segment.trackLink(
+          anchor.nativeElement,
+          'Tracking outbound link',
+          {
+            destination: anchor.nativeElement.href,
+          },
+        );
+      });
+    });
   }
 }
