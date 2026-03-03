@@ -6,7 +6,7 @@
     "ngx-segment-community": {
       "projectType": "library",
       "root": "projects/ngx-segment-community",
-      "sourceRoot": "projects/ngx-segment-community/src",
+      "sourceRoot": "projects/ngx-segment-community",
       "prefix": "lib",
       "architect": {
         "build": {
@@ -25,7 +25,8 @@
           "builder": "@angular/build:karma",
           "options": {
             "tsConfig": "projects/ngx-segment-community/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "karmaConfig": "projects/ngx-segment-community/karma.conf.js"
           }
         },
         "lint": {
