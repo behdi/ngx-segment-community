@@ -12,7 +12,28 @@ import { SegmentClient } from './client';
 import { SEGMENT_ANALYTICS_SETTINGS } from './provider';
 
 /**
+ * The primary public API for tracking analytics events via Segment.
  *
+ * `SegmentService` acts as an Angular-friendly facade over Segment's native `AnalyticsBrowser`.
+ * It provides fully typed methods for the core Segment spec (`track`, `page`, `identify`, etc.)
+ * and integrates seamlessly with Angular's Dependency Injection and reactivity system.
+ *
+ * This service should not be provided manually. It is automatically registered when you
+ * configure the library using `provideSegmentAnalytics()` in your root application config.
+ *
+ * @example
+ * ```ts
+ * @Component({...})
+ * export class CheckoutComponent {
+ *  private readonly _segment = inject(SegmentService);
+ *
+ *  onCheckout(cartTotal: number) {
+ *    this._segment.track('Checkout Completed', { total: cartTotal });
+ *  }
+ * }
+ * ```
+ *
+ * @see {@link https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/ | Segment Analytics.js Documentation}
  */
 @Injectable()
 export class SegmentService {
@@ -135,7 +156,7 @@ export class SegmentService {
   }
 
   /**
-   *  Attaches a Track call as a handler to a link.
+   * Attaches a Track call as a handler to a link.
    *
    * When a user clicks the link, `trackLink` delays the navigation event by 300 ms.
    * This ensures the Track request has enough time to leave the browser before the page unloads.
