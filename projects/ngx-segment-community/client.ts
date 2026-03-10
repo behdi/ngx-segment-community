@@ -2,6 +2,7 @@ import {
   computed,
   inject,
   Injectable,
+  InjectionToken,
   Injector,
   runInInjectionContext,
   signal,
@@ -17,6 +18,14 @@ import {
   SEGMENT_PLUGIN,
   SEGMENT_SOURCE_MIDDLEWARE,
 } from './provider';
+
+export const SEGMENT_BROWSER = new InjectionToken<AnalyticsBrowser>(
+  '[ngx-segment-community] Analytics Browser',
+  {
+    providedIn: 'root',
+    factory: () => new AnalyticsBrowser(),
+  },
+);
 
 /**
  * The internal singleton driver for Segment Analytics.
@@ -46,7 +55,7 @@ export class SegmentClient {
   private readonly _plugins = inject(SEGMENT_PLUGIN, { optional: true });
 
   /** The raw Segment Analytics browser instance. */
-  private readonly _browser = new AnalyticsBrowser();
+  private readonly _browser = inject(SEGMENT_BROWSER);
 
   /** Signal indicating if the browser is currently in the process of loading. */
   private readonly _isLoading = signal(false);
@@ -81,6 +90,7 @@ export class SegmentClient {
    * Performs the following:
    * - Registers source middlewares (if there are any)
    * - Registers destination middlewares (if there are any)
+   * - Registers plugins (if there are any)
    */
   constructor() {
     this._registerSourceMiddlewares();
