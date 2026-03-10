@@ -29,4 +29,10 @@ module.exports = tseslint.config(
     files: ["**/*.html"],
     rules: {},
   },
+  {
+    files: ["**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/unbound-method": "off",
+    },
+  },
 );
