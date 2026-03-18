@@ -10,6 +10,7 @@ import {
   withSettings,
   withSourceMiddlewares,
 } from 'ngx-segment-community';
+import { withAutomaticPageTracking } from 'ngx-segment-community/utils';
 import { env } from '../environments';
 import { routes } from './app.routes';
 import { PIIHasherMiddleware } from './middlewares';
@@ -30,6 +31,7 @@ export const appConfig: ApplicationConfig = {
       }),
       withPlugins([CurrencyInjectorPlugin, LiveFeedInterceptorPlugin]),
       withSourceMiddlewares([PIIHasherMiddleware]),
+      withAutomaticPageTracking(),
     ),
   ],
 };
