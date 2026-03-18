@@ -14,6 +14,7 @@ export const enum SegmentConfigKind {
   SMiddleware,
   DMiddleware,
   Plugin,
+  Utility,
 }
 
 /**
@@ -30,12 +31,12 @@ export interface SegmentConfig<Kind extends SegmentConfigKind> {
   ɵkind: Kind;
 
   /** An array of providers that power this specific feature. */
-  ɵprovider: Provider[];
+  ɵprovider: Provider[] | EnvironmentProviders;
 }
 
 function makeSegmentConfig<Kind extends SegmentConfigKind>(
   kind: Kind,
-  providers: Provider[],
+  providers: Provider[] | EnvironmentProviders,
 ): SegmentConfig<Kind> {
   return {
     ɵkind: kind,
@@ -53,7 +54,8 @@ export type SegmentSettings = SegmentConfig<SegmentConfigKind.Settings>;
 export type SegmentFeatures =
   | SegmentConfig<SegmentConfigKind.SMiddleware>
   | SegmentConfig<SegmentConfigKind.DMiddleware>
-  | SegmentConfig<SegmentConfigKind.Plugin>;
+  | SegmentConfig<SegmentConfigKind.Plugin>
+  | SegmentConfig<SegmentConfigKind.Utility>;
 
 export interface SegmentAnalyticsSettings {
   /**
@@ -223,7 +225,7 @@ export const SEGMENT_SOURCE_MIDDLEWARE = new InjectionToken<
  */
 export function withSourceMiddlewares(
   sourceMiddlewares: SegmentSourceMiddlewareFn[],
-) {
+): SegmentFeatures {
   return makeSegmentConfig(SegmentConfigKind.SMiddleware, [
     ...sourceMiddlewares.map((sm) => ({
       provide: SEGMENT_SOURCE_MIDDLEWARE,
@@ -302,7 +304,7 @@ export const SEGMENT_DESTINATION_MIDDLEWARE = new InjectionToken<
  */
 export function withDestinationMiddlewares(
   destinationMiddlewares: SegmentDestinationMiddlewareFn[],
-) {
+): SegmentFeatures {
   return makeSegmentConfig(SegmentConfigKind.DMiddleware, [
     ...destinationMiddlewares.map((dm) => ({
       provide: SEGMENT_DESTINATION_MIDDLEWARE,
@@ -365,7 +367,7 @@ export const SEGMENT_PLUGIN = new InjectionToken<SegmentPluginFn[]>(
  *
  * @see {@link https://www.twilio.com/docs/segment/connections/sources/catalog/libraries/website/javascript#advanced-plugin-api | Plugin API Spec}
  */
-export function withPlugins(plugins: SegmentPluginFn[]) {
+export function withPlugins(plugins: SegmentPluginFn[]): SegmentFeatures {
   return makeSegmentConfig(SegmentConfigKind.Plugin, [
     ...plugins.map((p) => ({
       provide: SEGMENT_PLUGIN,
@@ -373,6 +375,18 @@ export function withPlugins(plugins: SegmentPluginFn[]) {
       multi: true,
     })),
   ]);
+}
+
+/**
+ * Creates a segment utility provider.
+ *
+ * @param p - list of providers for the utility
+ * @internal
+ */
+export function ɵcreateSegmentUtility(
+  p: Provider[] | EnvironmentProviders,
+): SegmentFeatures {
+  return makeSegmentConfig(SegmentConfigKind.Utility, p);
 }
 
 /**

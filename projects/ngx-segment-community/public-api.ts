@@ -4,6 +4,7 @@ export {
   withPlugins,
   withSettings,
   withSourceMiddlewares,
+  ɵcreateSegmentUtility,
   type SegmentAnalyticsSettings,
   type SegmentDestinationMiddlewareFn,
   type SegmentFeatures,
