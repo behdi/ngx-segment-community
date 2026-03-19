@@ -31,10 +31,21 @@ export function withAutomaticPageTracking() {
             return currentRoute;
           }),
           concatMap(({ snapshot }) => {
-            const { category, name, properties } =
-              Object.values(snapshot.data).find(
-                (v) => v instanceof SegmentRouterData,
-              ) ?? {};
+            const segmentData = Object.values(snapshot.data).filter(
+              (v) => v instanceof SegmentRouterData,
+            );
+
+            if (segmentData.length > 1) {
+              if (typeof ngDevMode !== 'undefined' && ngDevMode)
+                console.warn(
+                  '[Segment] Cannot track page event. Multiple SegmentRouterData instances found in route data. ' +
+                    'This usually happens when using `paramsInheritanceStrategy: "always"` and assigning different keys in parent and child routes. ' +
+                    'To fix this, use the exact same key (e.g., `data: { segment: ... }`) across all routes so Angular safely overwrites them.',
+                );
+              return Promise.resolve();
+            }
+
+            const { category, name, properties } = segmentData.at(0) ?? {};
 
             const routeTitle = name ?? snapshot.title;
             const safeCategory = category ?? routeTitle;
