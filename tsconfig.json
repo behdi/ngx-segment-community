@@ -11,7 +11,8 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
     "paths": {
-      "ngx-segment-community": ["./dist/ngx-segment-community"]
+      "ngx-segment-community": ["./dist/ngx-segment-community"],
+      "ngx-segment-community/*": ["./dist/ngx-segment-community/*"]
     },
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
