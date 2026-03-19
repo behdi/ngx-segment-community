@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Routes } from '@angular/router';
+import { provideRouter, Routes, withRouterConfig } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import {
   provideSegmentAnalytics,
@@ -93,6 +93,68 @@ const routes: Routes = [
     component: DummyComponent,
     data: {
       segment: new SegmentRouterData('', '', { source: 'garbage' }),
+    },
+  },
+
+  // EDGE CASE 6: Deeply Nested Routes (Proving isolation and leaf-node targeting)
+  {
+    path: 'parent',
+    component: DummyComponent,
+    data: {
+      parentData: new SegmentRouterData('Parent View', { level: 1 }),
+    },
+    children: [
+      {
+        path: 'child',
+        component: DummyComponent,
+        data: {
+          childData: new SegmentRouterData('Child View', { level: 2 }),
+        },
+      },
+    ],
+  },
+
+  // EDGE CASE 7: Inherits because the CHILD has an empty path (paramsInheritanceStrategy: 'emptyOnly' Rule 1)
+  {
+    path: 'parent-with-component',
+    component: DummyComponent,
+    data: {
+      segment: new SegmentRouterData('Parent Data', {
+        rule: 'empty-child-path',
+      }),
+    },
+    children: [
+      {
+        // Empty child path to inherit parent data
+        path: '',
+        component: DummyComponent,
+      },
+    ],
+  },
+
+  // EDGE CASE 8: Inherits because the PARENT has no component (paramsInheritanceStrategy: 'emptyOnly' Rule 2)
+  {
+    path: 'componentless-parent',
+    data: {
+      segment: new SegmentRouterData('Componentless Data', {
+        rule: 'no-parent-component',
+      }),
+    },
+    children: [
+      {
+        path: 'standard-child',
+        component: DummyComponent, // Inherits from the component-less parent
+      },
+    ],
+  },
+
+  // EDGE CASE 9: The "Insane Developer" (Multiple instances manually defined on a single route)
+  {
+    path: 'multiple-manual-instances',
+    component: DummyComponent,
+    data: {
+      segmentOne: new SegmentRouterData('First Attempt'),
+      segmentTwo: new SegmentRouterData('Second Attempt'),
     },
   },
 ];
@@ -223,5 +285,117 @@ describe('withAutomaticPageTracking', () => {
         jasmine.stringMatching(/evaluates to an empty string/i),
       );
     });
+  });
+
+  describe('Nested Routes & Leaf Node Isolation', () => {
+    it('should drill down to the leaf node and ignore parent route data', async () => {
+      const harness = await RouterTestingHarness.create();
+
+      await harness.navigateByUrl('/parent/child');
+
+      expect(mockSegmentService.page).toHaveBeenCalledTimes(1);
+
+      expect(mockSegmentService.page).toHaveBeenCalledWith(
+        'Child View',
+        undefined,
+        { level: 2 },
+      );
+    });
+  });
+
+  describe('Angular Default Data Inheritance (emptyOnly)', () => {
+    it('should track inherited data when the child route has an empty path', async () => {
+      const harness = await RouterTestingHarness.create();
+
+      await harness.navigateByUrl('/parent-with-component');
+
+      expect(mockSegmentService.page).toHaveBeenCalledTimes(1);
+      expect(mockSegmentService.page).toHaveBeenCalledWith(
+        'Parent Data',
+        undefined,
+        { rule: 'empty-child-path' },
+      );
+    });
+
+    it('should track inherited data when the parent route has no component set', async () => {
+      const harness = await RouterTestingHarness.create();
+
+      await harness.navigateByUrl('/componentless-parent/standard-child');
+
+      expect(mockSegmentService.page).toHaveBeenCalledTimes(1);
+      expect(mockSegmentService.page).toHaveBeenCalledWith(
+        'Componentless Data',
+        undefined,
+        { rule: 'no-parent-component' },
+      );
+    });
+  });
+
+  describe('Multiple Instance Protection (Standard Routing)', () => {
+    it('should abort tracking if a developer manually provides multiple SegmentRouterData instances on a single route', async () => {
+      const harness = await RouterTestingHarness.create();
+      await harness.navigateByUrl('/multiple-manual-instances');
+
+      expect(mockSegmentService.page).not.toHaveBeenCalled();
+
+      expect(console.warn).toHaveBeenCalledWith(
+        jasmine.stringMatching(/Multiple SegmentRouterData instances found/i),
+      );
+    });
+  });
+});
+
+describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () => {
+  let mockSegmentService: jasmine.SpyObj<SegmentService>;
+
+  beforeEach(() => {
+    mockSegmentService = jasmine.createSpyObj<SegmentService>(
+      'SegmentService',
+      ['page'],
+    );
+    mockSegmentService.page.and.resolveTo();
+    spyOn(console, 'warn');
+
+    const alwaysRoutes: Routes = [
+      {
+        path: 'parent',
+        data: { parentSegment: new SegmentRouterData('Parent View') },
+        children: [
+          {
+            path: 'child',
+            component: DummyComponent,
+            data: {
+              childSegment: new SegmentRouterData('Child View'),
+            },
+          },
+        ],
+      },
+    ];
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          alwaysRoutes,
+          withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+        ),
+        provideSegmentAnalytics(
+          withSettings({ writeKey: 'SOME_KEY' }),
+          withAutomaticPageTracking(),
+        ),
+        { provide: SegmentService, useValue: mockSegmentService },
+      ],
+    });
+  });
+
+  it('should abort tracking and log a severe warning if multiple SegmentRouterData instances are found', async () => {
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/parent/child');
+
+    expect(console.warn).toHaveBeenCalledWith(
+      jasmine.stringMatching(/Multiple SegmentRouterData instances found/i),
+    );
+
+    expect(mockSegmentService.page).not.toHaveBeenCalled();
   });
 });
