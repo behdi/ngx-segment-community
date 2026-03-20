@@ -20,7 +20,7 @@ import { SegmentRouterData } from './router-data';
  * Pass this utility as an argument to `provideSegmentAnalytics` in your application config:
  * ```ts
  * provideSegmentAnalytics(
- *  withSettings({ writeKey: 'YOUR_WRITE_KEY' }),
+ *  { writeKey: 'YOUR_WRITE_KEY' },
  *  withAutomaticPageTracking()
  * );
  * ```
