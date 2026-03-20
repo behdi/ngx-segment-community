@@ -5,7 +5,47 @@ import { SegmentService, ɵcreateSegmentUtility } from 'ngx-segment-community';
 import { concatMap, filter, map } from 'rxjs';
 import { SegmentRouterData } from './router-data';
 
-/** @inheritdoc */
+/**
+ * Enables automatic tracking of Segment `page` events on Angular router navigation.
+ *
+ * This utility hooks into the router's `NavigationEnd` event, drilling down to the primary
+ * outlet's leaf node to extract routing metadata and automatically fire `segment.page()`.
+ *
+ * By default, the tracker uses the native Angular `title` property of the route as the page name.
+ * To provide a custom Segment category, override the page name, or attach custom event properties,
+ * provide an instance of {@link SegmentRouterData} anywhere inside the route's `data` object.
+ *
+ *
+ * **Setup:**
+ * Pass this utility as an argument to `provideSegmentAnalytics` in your application config:
+ * ```ts
+ * provideSegmentAnalytics(
+ *  withSettings({ writeKey: 'YOUR_WRITE_KEY' }),
+ *  withAutomaticPageTracking()
+ * );
+ * ```
+ *
+ * **Route Configuration Example:**
+ * ```ts
+ * const routes: Routes = [
+ *  // 1. Native fallback. Tracks as: page('Storefront')
+ *  {
+ *    path: 'store',
+ *    title: 'Storefront',
+ *    component: StoreComponent
+ *  },
+ *  // 2. Custom properties. Tracks as: page('Contact', undefined, { version: 'v2' })
+ *  {
+ *    path: 'contact',
+ *    title: 'Contact',
+ *    component: ContactComponent,
+ *    data: {
+ *      segment: new SegmentRouterData({ version: 'v2' })
+ *    }
+ *  }
+ * ];
+ * ```
+ */
 export function withAutomaticPageTracking() {
   return ɵcreateSegmentUtility(
     provideAppInitializer(() => {
