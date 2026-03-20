@@ -9,7 +9,6 @@ import {
   SEGMENT_SOURCE_MIDDLEWARE,
   withDestinationMiddlewares,
   withPlugins,
-  withSettings,
   withSourceMiddlewares,
   type SegmentDestinationMiddlewareFn,
   type SegmentPluginFn,
@@ -34,7 +33,7 @@ describe('Segment Providers', () => {
   describe('provideSegmentAnalytics', () => {
     it('should provide the SegmentService as a singleton', () => {
       configureTestingModuleWith([
-        provideSegmentAnalytics(withSettings({ writeKey: 'TEST_KEY' })),
+        provideSegmentAnalytics({ writeKey: 'TEST_KEY' }),
       ]);
 
       const service1 = TestBed.inject(SegmentService);
@@ -43,9 +42,7 @@ describe('Segment Providers', () => {
       expect(service1).toBeTruthy();
       expect(service1).toBe(service2); // Proves it's a singleton
     });
-  });
 
-  describe('withSettings', () => {
     it('should successfully provide the settings token', () => {
       const mockSettings = {
         writeKey: 'TEST_KEY',
@@ -54,9 +51,7 @@ describe('Segment Providers', () => {
         initializationMode: 'manual' as const,
       };
 
-      configureTestingModuleWith([
-        provideSegmentAnalytics(withSettings(mockSettings)),
-      ]);
+      configureTestingModuleWith([provideSegmentAnalytics(mockSettings)]);
 
       const settings = TestBed.inject(SEGMENT_ANALYTICS_SETTINGS);
 
@@ -81,7 +76,7 @@ describe('Segment Providers', () => {
 
       configureTestingModuleWith([
         provideSegmentAnalytics(
-          withSettings({ writeKey: 'TEST' }),
+          { writeKey: 'TEST' },
           withSourceMiddlewares([mockMw1, mockMw2]),
           withSourceMiddlewares([mockMw3]),
         ),
@@ -99,7 +94,7 @@ describe('Segment Providers', () => {
 
     it('should be null if no source middlewares are provided', () => {
       configureTestingModuleWith([
-        provideSegmentAnalytics(withSettings({ writeKey: 'TEST' })),
+        provideSegmentAnalytics({ writeKey: 'TEST' }),
       ]);
 
       const middlewares = TestBed.inject(SEGMENT_SOURCE_MIDDLEWARE, undefined, {
@@ -122,7 +117,7 @@ describe('Segment Providers', () => {
 
       configureTestingModuleWith([
         provideSegmentAnalytics(
-          withSettings({ writeKey: 'TEST' }),
+          { writeKey: 'TEST' },
           withDestinationMiddlewares([mockDestMw]),
         ),
       ]);
@@ -155,7 +150,7 @@ describe('Segment Providers', () => {
 
       configureTestingModuleWith([
         provideSegmentAnalytics(
-          withSettings({ writeKey: 'TEST' }),
+          { writeKey: 'TEST' },
           withPlugins([mockPlugin1]),
           withPlugins([mockPlugin2]),
         ),
@@ -171,7 +166,7 @@ describe('Segment Providers', () => {
 
     it('should be null if no plugins are provided', () => {
       configureTestingModuleWith([
-        provideSegmentAnalytics(withSettings({ writeKey: 'TEST' })),
+        provideSegmentAnalytics({ writeKey: 'TEST' }),
       ]);
 
       const plugins = TestBed.inject(SEGMENT_PLUGIN, undefined, {

@@ -2,11 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Routes, withRouterConfig } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import {
-  provideSegmentAnalytics,
-  SegmentService,
-  withSettings,
-} from 'ngx-segment-community';
+import { provideSegmentAnalytics, SegmentService } from 'ngx-segment-community';
 import { withAutomaticPageTracking } from './auto-page-tracker';
 import { SegmentRouterData } from './router-data';
 
@@ -176,9 +172,8 @@ describe('withAutomaticPageTracking', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
-
         provideSegmentAnalytics(
-          withSettings({ writeKey: 'SOME_KEY' }),
+          { writeKey: 'SOME_KEY' },
           withAutomaticPageTracking(),
         ),
         // Use the mock after the main provider function to make sure it actually subs it out
@@ -379,7 +374,7 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
           withRouterConfig({ paramsInheritanceStrategy: 'always' }),
         ),
         provideSegmentAnalytics(
-          withSettings({ writeKey: 'SOME_KEY' }),
+          { writeKey: 'SOME_KEY' },
           withAutomaticPageTracking(),
         ),
         { provide: SegmentService, useValue: mockSegmentService },
