@@ -44,6 +44,14 @@ import { EventFeed } from '../services/event-feed';
           <a mat-list-item routerLink="/storefront" routerLinkActive="active">
             Storefront
           </a>
+
+          <a
+            mat-list-item
+            routerLink="/routing-sandbox"
+            routerLinkActive="active"
+          >
+            Routing Sandbox
+          </a>
         </mat-nav-list>
       </mat-drawer>
 

@@ -1,4 +1,4 @@
-import { SegmentRouterData } from './router-data';
+import { SegmentRouterData, SegmentRouterIgnore } from './router-data';
 
 describe('SegmentRouterData', () => {
   describe('Overload 1: Properties only', () => {
@@ -49,5 +49,25 @@ describe('SegmentRouterData', () => {
       expect(data.name).toBe('Cart');
       expect(data.properties).toBeUndefined();
     });
+  });
+});
+
+describe('SegmentRouterIgnore', () => {
+  it('should default cascade to false if no config is provided', () => {
+    const ignore = new SegmentRouterIgnore();
+    expect(ignore.cascade).toBeFalse();
+  });
+
+  it('should default cascade to false if an empty config object is provided', () => {
+    const ignore = new SegmentRouterIgnore({});
+    expect(ignore.cascade).toBeFalse();
+  });
+
+  it('should strictly assign cascade based on the provided config', () => {
+    const cascadingIgnore = new SegmentRouterIgnore({ cascade: true });
+    expect(cascadingIgnore.cascade).toBeTrue();
+
+    const strictIgnore = new SegmentRouterIgnore({ cascade: false });
+    expect(strictIgnore.cascade).toBeFalse();
   });
 });

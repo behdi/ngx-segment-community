@@ -6,7 +6,6 @@ const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommen
 const jsdoc = require("eslint-plugin-jsdoc");
 const sonar = require("eslint-plugin-sonarjs");
 const fp = require("eslint-plugin-fp");
-const preferClassProperties = require("eslint-plugin-prefer-class-properties");
 const preferEarlyReturn = require("@regru/eslint-plugin-prefer-early-return");
 
 module.exports = tseslint.config(
@@ -32,7 +31,6 @@ module.exports = tseslint.config(
       jsdoc,
       sonar,
       fp,
-      preferClassProperties,
       preferEarlyReturn,
     },
     processor: angular.processInlineTemplates,
@@ -252,6 +250,12 @@ module.exports = tseslint.config(
           readonly: "array-simple",
         },
       ],
+      "@typescript-eslint/parameter-properties": [
+        "warn",
+        {
+          prefer: "parameter-property",
+        },
+      ],
 
       // SonjarJS overrides
       "sonarjs/no-duplicate-string": "off",
@@ -267,7 +271,6 @@ module.exports = tseslint.config(
       "fp/no-proxy": "error",
       "fp/no-valueof-field": "error",
 
-      "preferClassProperties/prefer-class-properties": "warn",
       "preferEarlyReturn/prefer-early-return": [
         "error",
         { maximumStatements: 1 },

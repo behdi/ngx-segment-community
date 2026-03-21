@@ -10,7 +10,7 @@ export const routes: Routes = [
       {
         path: 'main',
         data: {
-          s: new SegmentRouterData('Page title', {
+          segment: new SegmentRouterData('Page title', {
             prop1: 'value',
           }),
         },
@@ -20,9 +20,16 @@ export const routes: Routes = [
       {
         path: 'storefront',
         title: 'marketplace',
-        data: { segmentAnalyticsProperties: { on_call: true } },
+        data: { segment: { on_call: true } },
         loadComponent: () =>
           import('./pages/storefront-page').then((c) => c.AboutPage),
+      },
+      {
+        path: 'routing-sandbox',
+        loadComponent: () =>
+          import('./pages/routing-sandbox/sandbox').then((c) => c.Sandbox),
+        loadChildren: () =>
+          import('./pages/routing-sandbox/routes').then((r) => r.sandboxRoutes),
       },
       { path: '**', redirectTo: 'main' },
     ],

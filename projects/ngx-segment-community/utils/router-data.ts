@@ -73,3 +73,80 @@ export class SegmentRouterData {
     this.properties = arg2;
   }
 }
+
+/**
+ * Configuration options for the {@link SegmentRouterIgnore} kill switch.
+ */
+interface SegmentRouterIgnoreConfig {
+  /**
+   * If `true`, the tracking opt-out will cascade down to all child routes in that branch.
+   * If `false` or undefined, only the specific route where this is applied will be ignored.
+   *
+   * @remarks
+   * Note: If your router uses `paramsInheritanceStrategy: 'always'`, Angular natively copies parent data to children.
+   * This will cause a child route to inherit the ignore instance, effectively making `cascade: false` act like `true`.
+   */
+  cascade: boolean;
+}
+
+/**
+ * A metadata class used to prevent the automatic page tracker from firing.
+ *
+ * Attach an instance of this class to a route's `data` object to act as a tracking kill switch.
+ * By default, it only prevents tracking if the route is the final destination (leaf node).
+ * To silence an entire branch of routes, initialize it with `{ cascade: true }`.
+ *
+ * Only useful if {@link withAutomaticPageTracking} is used.
+ *
+ * @example
+ * ```ts
+ * const routes: Routes = [
+ *  {
+ *    path: 'admin',
+ *    // Silences '/admin' and all its children (e.g., '/admin/users')
+ *    data: { ignore: new SegmentRouterIgnore({ cascade: true }) },
+ *    children: [ ... ]
+ *  },
+ *  {
+ *    path: 'health-check',
+ *    // Only silences the '/health-check' route itself
+ *    data: { ignore: new SegmentRouterIgnore() }
+ *  }
+ * ];
+ * ```
+ */
+export class SegmentRouterIgnore {
+  public readonly cascade: boolean = false;
+
+  /**
+   * Initializes a new instance of the tracking kill switch.
+   *
+   * Attach an instance of this class to a route's `data` object to act as a tracking kill switch.
+   * By default, it only prevents tracking if the route is the final destination (leaf node).
+   *
+   * Only useful if {@link withAutomaticPageTracking} is used.
+   *
+   * @param configuration Optional settings to dictate the behavior of the ignore flag.
+   * If omitted, the ignore behavior strictly applies to the route where it is declared.
+   *
+   * @example
+   * ```ts
+   * const routes: Routes = [
+   *  {
+   *    path: 'admin',
+   *    // Silences '/admin' and all its children (e.g., '/admin/users')
+   *    data: { ignore: new SegmentRouterIgnore({ cascade: true }) },
+   *    children: [ ... ]
+   *  },
+   *  {
+   *    path: 'health-check',
+   *    // Only silences the '/health-check' route itself
+   *    data: { ignore: new SegmentRouterIgnore() }
+   *  }
+   * ];
+   * ```
+   */
+  constructor(configuration?: Partial<SegmentRouterIgnoreConfig>) {
+    this.cascade = !!configuration?.cascade;
+  }
+}

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "(ng build ngx-segment-community --watch ) & sleep 10 && ng serve",
     "build": "ng build ngx-segment-community --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -37,7 +37,6 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-jsdoc": "^62.5.3",
-    "eslint-plugin-prefer-class-properties": "^1.0.0",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-sonarjs": "^4.0.2",
     "jasmine-core": "~5.7.0",
