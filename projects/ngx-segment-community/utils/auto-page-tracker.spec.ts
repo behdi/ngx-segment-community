@@ -4,7 +4,7 @@ import { provideRouter, Routes, withRouterConfig } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideSegmentAnalytics, SegmentService } from 'ngx-segment-community';
 import { withAutomaticPageTracking } from './auto-page-tracker';
-import { SegmentRouterData } from './router-data';
+import { SegmentRouterData, SegmentRouterIgnore } from './router-data';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -365,6 +365,21 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
           },
         ],
       },
+      {
+        path: 'ignore-parent',
+        data: { ignore: new SegmentRouterIgnore() }, // cascade: false
+        children: [
+          {
+            path: 'child',
+            component: DummyComponent,
+            data: {
+              segment: new SegmentRouterData(
+                'I will be silenced by inheritance',
+              ),
+            },
+          },
+        ],
+      },
     ];
 
     TestBed.configureTestingModule({
@@ -392,5 +407,178 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
     );
 
     expect(mockSegmentService.page).not.toHaveBeenCalled();
+  });
+
+  it('should silence a child route if the parent has SegmentRouterIgnore, because "always" forces the child to inherit the flag', async () => {
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/ignore-parent/child');
+
+    expect(mockSegmentService.page).not.toHaveBeenCalled();
+  });
+});
+
+const ignoreRoutes: Routes = [
+  // CASE 1: Basic leaf node ignore
+  {
+    path: 'ignore-leaf',
+    component: DummyComponent,
+    title: 'Should Not Track',
+    data: {
+      ignore: new SegmentRouterIgnore(),
+    },
+  },
+
+  // CASE 2: The Collision (ignore & track on the exact same route)
+  {
+    path: 'ignore-collision',
+    component: DummyComponent,
+    data: {
+      segment: new SegmentRouterData('Track Me Please'),
+      ignore: new SegmentRouterIgnore(), // The kill switch must win
+    },
+  },
+
+  // CASE 3: Parent ignore WITHOUT cascade (Child should track successfully)
+  {
+    path: 'parent-no-cascade',
+    component: DummyComponent,
+    data: {
+      ignore: new SegmentRouterIgnore(),
+    },
+    children: [
+      {
+        path: 'child',
+        component: DummyComponent,
+        data: {
+          segment: new SegmentRouterData('Safe Child View'),
+        },
+      },
+    ],
+  },
+
+  // CASE 4: Parent ignore WITH cascade (child must be silenced)
+  {
+    path: 'parent-cascade',
+    data: {
+      ignore: new SegmentRouterIgnore({ cascade: true }),
+    },
+    children: [
+      {
+        path: 'child',
+        component: DummyComponent,
+        data: {
+          segment: new SegmentRouterData('Doomed Child View'),
+        },
+      },
+    ],
+  },
+
+  // CASE 5: Lazy loaded tracking (baseline proof that lazy routes work)
+  {
+    path: 'lazy-standard',
+    loadChildren: () =>
+      Promise.resolve([
+        {
+          path: 'child',
+          component: DummyComponent,
+          data: { segment: new SegmentRouterData('Lazy Child View') },
+        },
+      ]),
+  },
+
+  // CASE 6: Lazy loaded child under a cascading parent
+  {
+    path: 'lazy-cascade',
+    data: {
+      ignore: new SegmentRouterIgnore({ cascade: true }),
+    },
+    loadChildren: () =>
+      Promise.resolve([
+        {
+          path: 'child',
+          component: DummyComponent,
+          data: { segment: new SegmentRouterData('Doomed Lazy Child View') },
+        },
+      ]),
+  },
+];
+
+describe('SegmentRouterIgnore (The Kill Switch)', () => {
+  let mockSegmentService: jasmine.SpyObj<SegmentService>;
+
+  beforeEach(() => {
+    mockSegmentService = jasmine.createSpyObj<SegmentService>(
+      'SegmentService',
+      ['page'],
+    );
+    mockSegmentService.page.and.resolveTo();
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(ignoreRoutes),
+        provideSegmentAnalytics(
+          { writeKey: 'TEST_KEY' },
+          withAutomaticPageTracking(),
+        ),
+        { provide: SegmentService, useValue: mockSegmentService },
+      ],
+    });
+  });
+
+  it('should completely ignore a leaf route that provides SegmentRouterIgnore', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/ignore-leaf');
+
+    expect(mockSegmentService.page).not.toHaveBeenCalled();
+  });
+
+  it('should prioritize SegmentRouterIgnore if a route accidentally provides BOTH Ignore and Data', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/ignore-collision');
+
+    expect(mockSegmentService.page).not.toHaveBeenCalled();
+  });
+
+  it('should track the child route if the parent has SegmentRouterIgnore WITHOUT cascade', async () => {
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/parent-no-cascade/child');
+
+    expect(mockSegmentService.page).toHaveBeenCalledOnceWith(
+      'Safe Child View',
+      undefined,
+      undefined,
+    );
+  });
+
+  it('should SILENCE the child route if the parent has SegmentRouterIgnore WITH cascade', async () => {
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/parent-cascade/child');
+
+    expect(mockSegmentService.page).not.toHaveBeenCalled();
+  });
+
+  describe('Lazy Loaded Boundaries', () => {
+    it('should successfully track a lazy-loaded route (baseline check)', async () => {
+      const harness = await RouterTestingHarness.create();
+
+      await harness.navigateByUrl('/lazy-standard/child');
+
+      expect(mockSegmentService.page).toHaveBeenCalledOnceWith(
+        'Lazy Child View',
+        undefined,
+        undefined,
+      );
+    });
+
+    it('should SILENCE a lazy-loaded child if the eager parent has cascade: true', async () => {
+      const harness = await RouterTestingHarness.create();
+
+      await harness.navigateByUrl('/lazy-cascade/child');
+
+      expect(mockSegmentService.page).not.toHaveBeenCalled();
+    });
   });
 });

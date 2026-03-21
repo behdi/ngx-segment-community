@@ -1,9 +1,9 @@
 import { inject, provideAppInitializer } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { SegmentService, ɵcreateSegmentUtility } from 'ngx-segment-community';
 import { concatMap, filter, map } from 'rxjs';
-import { SegmentRouterData } from './router-data';
+import { SegmentRouterData, SegmentRouterIgnore } from './router-data';
 
 /**
  * Enables automatic tracking of Segment `page` events on Angular router navigation.
@@ -64,14 +64,28 @@ export function withAutomaticPageTracking() {
               );
 
               if (!primaryChild) break;
+
+              const ignoreFlag = Object.values(primaryChild.snapshot.data).find(
+                (p) => p instanceof SegmentRouterIgnore,
+              );
+              if (ignoreFlag?.cascade) return null;
+
               // eslint-disable-next-line fp/no-mutation
               currentRoute = primaryChild;
             }
 
             return currentRoute;
           }),
-          concatMap(({ snapshot }) => {
-            const segmentData = Object.values(snapshot.data).filter(
+          filter((route) => route !== null),
+          concatMap(({ snapshot }: ActivatedRoute) => {
+            const dataValues = Object.values(snapshot.data);
+
+            const hasIgnoreFlag = !!dataValues.find(
+              (v) => v instanceof SegmentRouterIgnore,
+            );
+            if (hasIgnoreFlag) return Promise.resolve();
+
+            const segmentData = dataValues.filter(
               (v) => v instanceof SegmentRouterData,
             );
 
