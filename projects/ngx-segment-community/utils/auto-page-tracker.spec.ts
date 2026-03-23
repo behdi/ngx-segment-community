@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   provideRouter,
+  ResolveFn,
   RouterFeatures,
   Routes,
   withRouterConfig,
@@ -359,6 +360,35 @@ describe('withAutomaticPageTracking', () => {
       );
     });
   });
+
+  describe('Dynamic Route Resolvers', () => {
+    it('should successfully track a page using dynamically resolved SegmentRouterData', async () => {
+      const dynamicDataResolver: ResolveFn<SegmentRouterData> = () => {
+        // In a real app, this would be adjusted to use results from a previous resolvers, or an http call.
+        return new SegmentRouterData('Resolved Category', 'Resolved Name', {
+          resolvedId: 42,
+        });
+      };
+
+      const { harness, mockSegmentService } = await setUpTrackingModule([
+        {
+          path: 'dynamic-data',
+          component: DummyComponent,
+          resolve: {
+            dynamicSegment: dynamicDataResolver,
+          },
+        },
+      ]);
+
+      await harness.navigateByUrl('/dynamic-data');
+
+      expect(mockSegmentService.page).toHaveBeenCalledOnceWith(
+        'Resolved Category',
+        'Resolved Name',
+        { resolvedId: 42 },
+      );
+    });
+  });
 });
 
 describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () => {
@@ -562,6 +592,28 @@ describe('SegmentRouterIgnore (The Kill Switch)', () => {
       ]);
 
       await harness.navigateByUrl('/lazy-cascade/child');
+
+      expect(mockSegmentService.page).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Dynamic Route Resolvers', () => {
+    it('should completely silence tracking if a resolver dynamically returns a SegmentRouterIgnore kill switch', async () => {
+      const dynamicIgnoreResolver: ResolveFn<SegmentRouterIgnore> = () => {
+        return new SegmentRouterIgnore();
+      };
+
+      const { harness, mockSegmentService } = await setUpTrackingModule([
+        {
+          path: 'dynamic-ignore',
+          component: DummyComponent,
+          resolve: {
+            abortTracking: dynamicIgnoreResolver,
+          },
+        },
+      ]);
+
+      await harness.navigateByUrl('/dynamic-ignore');
 
       expect(mockSegmentService.page).not.toHaveBeenCalled();
     });
