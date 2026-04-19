@@ -4,8 +4,8 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A standalone-first Angular wrapper for Segment Analytics. Built for modern
-Angular, it provides a first-class, reactive wrapper around Segment's browser
-tracking API.
+Angular (17+), it provides a first-class, reactive wrapper around Segment's
+browser tracking API.
 
 It deeply integrates with Angular's Dependency Injection system, allowing you to
 seamlessly mutate tracking payloads using your own application state and
