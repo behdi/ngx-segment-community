@@ -7,7 +7,7 @@
 (`@segment/analytics-next`).**
 
 This repository houses the enterprise-grade Angular integration for Segment.
-Built from the ground up for modern Angular (v20+), it leverages Standalone
+Built from the ground up for modern Angular (v17+), it leverages Standalone
 APIs, Dependency Injection closures, and Signals to provide a flawless, reactive
 tracking experience.
 
@@ -24,8 +24,8 @@ The modern architecture. Completely rewritten to support the Standalone API and
 dependency injection for Segment Plugins and Middlewares, along with a lot of
 unit tests.
 
-- **If you are starting a new project or migrating an app off `NgModules`, use
-  this version.**
+- **If you are starting a new project or migrating an app off `NgModules` (and
+  using Angular 17+), use this version.**
 - Read the
   [Full v2 Documentation here](./projects/ngx-segment-community/README.md)
 
