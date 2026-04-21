@@ -29,6 +29,10 @@
       "optional": true
     }
   },
+  "scripts": {
+    "build": "ng build ngx-segment-community",
+    "test": "ng test ngx-segment-community"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },

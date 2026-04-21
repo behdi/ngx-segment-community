@@ -1,6 +1,9 @@
 {
   "name": "ngx-segment-community-base",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "workspaces": [
+    "projects/ngx-segment-community"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "(ng build ngx-segment-community --watch ) & sleep 10 && ng serve",
