@@ -1,6 +1,6 @@
 {
   "name": "ngx-segment-community",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0",
   "description": "The community-maintained Angular wrapper for Segment Analytics (Analytics.js). Supports Angular 17+.",
   "keywords": [
     "angular",
