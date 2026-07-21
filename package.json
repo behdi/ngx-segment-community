@@ -18,7 +18,7 @@
   "dependencies": {
     "@angular/cdk": "^20.2.14",
     "@angular/common": "^20.0.0",
-    "@angular/compiler": "^20.3.25",
+    "@angular/compiler": "^20.0.0",
     "@angular/core": "^20.0.0",
     "@angular/forms": "^20.0.0",
     "@angular/material": "^20.2.14",
@@ -30,7 +30,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^20.3.15",
+    "@angular/build": "^20.0.0",
     "@angular/cli": "^20.0.0",
     "@angular/compiler-cli": "^20.0.0",
     "@regru/eslint-plugin-prefer-early-return": "^1.0.0",
