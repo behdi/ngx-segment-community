@@ -41,29 +41,50 @@ function setupPageTracking(
           return currentRoute;
         }),
         filter((route) => route !== null),
-        concatMap(({ snapshot }: ActivatedRoute) => {
-          const dataValues = Object.values(snapshot.data);
-
-          const hasIgnoreFlag = !!dataValues.find(
-            (v) => v instanceof SegmentRouterIgnore,
+        concatMap(({ parent, snapshot }: ActivatedRoute) => {
+          const rawDataValues = Object.values<SegmentRouterData>(snapshot.data);
+          const rawParentValues = Object.values<SegmentRouterData>(
+            parent?.snapshot.data ?? {},
           );
-          if (hasIgnoreFlag) return Promise.resolve();
 
-          const segmentData = dataValues.filter(
+          const leafSegmentInstances = rawDataValues.filter(
+            (v) => v instanceof SegmentRouterData,
+          );
+          const parentSegmentInstances = rawParentValues.filter(
             (v) => v instanceof SegmentRouterData,
           );
 
-          if (segmentData.length > 1) {
-            if (typeof ngDevMode !== 'undefined' && ngDevMode)
+          const leafIgnoreInstances = rawDataValues.filter(
+            (v) => v instanceof SegmentRouterIgnore,
+          );
+          const parentIgnoreInstances = rawParentValues.filter(
+            (v) => v instanceof SegmentRouterIgnore,
+          );
+
+          const uniqueLeafSegment = leafSegmentInstances.filter(
+            (i) => !parentSegmentInstances.includes(i),
+          );
+          const uniqueLeafIgnore = leafIgnoreInstances.filter(
+            (i) => !parentIgnoreInstances.includes(i),
+          );
+
+          if (uniqueLeafIgnore.length > 0) return Promise.resolve();
+
+          let segmentData: SegmentRouterData | undefined;
+          if (uniqueLeafSegment.length === 1) {
+            segmentData = uniqueLeafSegment[0];
+          } else if (uniqueLeafSegment.length > 1) {
+            if (typeof ngDevMode !== 'undefined' && ngDevMode) {
               console.warn(
-                '[Segment] Cannot track page event. Multiple SegmentRouterData instances found in route data. ' +
-                  'This usually happens when using `paramsInheritanceStrategy: "always"` and assigning different keys in parent and child routes. ' +
-                  'To fix this, use the exact same key (e.g., `data: { segment: ... }`) across all routes so Angular safely overwrites them.',
+                '[Segment] Cannot track page event. Multiple new SegmentRouterData instances found...',
               );
+            }
             return Promise.resolve();
+          } else if (leafSegmentInstances.length === 1) {
+            segmentData = leafSegmentInstances[0];
           }
 
-          const { category, name, properties } = segmentData.at(0) ?? {};
+          const { category, name, properties } = segmentData ?? {};
 
           const routeTitle = name ?? snapshot.title;
           const safeCategory = category ?? routeTitle;
