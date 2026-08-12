@@ -276,27 +276,30 @@ describe('withAutomaticPageTracking', () => {
     });
   });
 
-  describe('Angular Default Data Inheritance (emptyOnly)', () => {
+  describe('Angular Data Inheritance Strategy -> emptyOnly', () => {
     // EDGE CASE 7: Inherits because the CHILD has an empty path (paramsInheritanceStrategy: 'emptyOnly' Rule 1)
     it('should track inherited data when the child route has an empty path', async () => {
-      const { harness, mockSegmentService } = await setUpTrackingModule([
-        {
-          path: 'parent-with-component',
-          component: DummyComponent,
-          data: {
-            segment: new SegmentRouterData('Parent Data', {
-              rule: 'empty-child-path',
-            }),
-          },
-          children: [
-            {
-              // Empty child path to inherit parent data
-              path: '',
-              component: DummyComponent,
+      const { harness, mockSegmentService } = await setUpTrackingModule(
+        [
+          {
+            path: 'parent-with-component',
+            component: DummyComponent,
+            data: {
+              segment: new SegmentRouterData('Parent Data', {
+                rule: 'empty-child-path',
+              }),
             },
-          ],
-        },
-      ]);
+            children: [
+              {
+                // Empty child path to inherit parent data
+                path: '',
+                component: DummyComponent,
+              },
+            ],
+          },
+        ],
+        withRouterConfig({ paramsInheritanceStrategy: 'emptyOnly' }),
+      );
 
       await harness.navigateByUrl('/parent-with-component');
 
@@ -310,22 +313,25 @@ describe('withAutomaticPageTracking', () => {
 
     // EDGE CASE 8: Inherits because the PARENT has no component (paramsInheritanceStrategy: 'emptyOnly' Rule 2)
     it('should track inherited data when the parent route has no component set', async () => {
-      const { harness, mockSegmentService } = await setUpTrackingModule([
-        {
-          path: 'componentless-parent',
-          data: {
-            segment: new SegmentRouterData('Componentless Data', {
-              rule: 'no-parent-component',
-            }),
-          },
-          children: [
-            {
-              path: 'standard-child',
-              component: DummyComponent, // Inherits from the component-less parent
+      const { harness, mockSegmentService } = await setUpTrackingModule(
+        [
+          {
+            path: 'componentless-parent',
+            data: {
+              segment: new SegmentRouterData('Componentless Data', {
+                rule: 'no-parent-component',
+              }),
             },
-          ],
-        },
-      ]);
+            children: [
+              {
+                path: 'standard-child',
+                component: DummyComponent, // Inherits from the component-less parent
+              },
+            ],
+          },
+        ],
+        withRouterConfig({ paramsInheritanceStrategy: 'emptyOnly' }),
+      );
 
       await harness.navigateByUrl('/componentless-parent/standard-child');
 
@@ -356,7 +362,9 @@ describe('withAutomaticPageTracking', () => {
 
       expect(mockSegmentService.page).not.toHaveBeenCalled();
       expect(console.warn).toHaveBeenCalledWith(
-        jasmine.stringMatching(/Multiple SegmentRouterData instances found/i),
+        jasmine.stringMatching(
+          /Multiple new SegmentRouterData instances found/i,
+        ),
       );
     });
   });
@@ -396,7 +404,7 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
     spyOn(console, 'warn');
   });
 
-  it('should abort tracking and log a severe warning if multiple SegmentRouterData instances are found', async () => {
+  it('should distinguish between parent and child router segment data and use the data on the child to send the event', async () => {
     const { harness, mockSegmentService } = await setUpTrackingModule(
       [
         {
@@ -418,13 +426,15 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
 
     await harness.navigateByUrl('/parent/child');
 
-    expect(console.warn).toHaveBeenCalledWith(
-      jasmine.stringMatching(/Multiple SegmentRouterData instances found/i),
+    expect(mockSegmentService.page).toHaveBeenCalled();
+    expect(mockSegmentService.page).toHaveBeenCalledWith(
+      'Child View',
+      undefined,
+      undefined,
     );
-    expect(mockSegmentService.page).not.toHaveBeenCalled();
   });
 
-  it('should silence a child route if the parent has SegmentRouterIgnore, because "always" forces the child to inherit the flag', async () => {
+  it('should correctly ignore a non-cascading segment ignore on the parent route.', async () => {
     const { harness, mockSegmentService } = await setUpTrackingModule(
       [
         {
@@ -436,7 +446,7 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
               component: DummyComponent,
               data: {
                 segment: new SegmentRouterData(
-                  'I will be silenced by inheritance',
+                  'I will NOT be silenced by inheritance!',
                 ),
               },
             },
@@ -448,7 +458,12 @@ describe('withAutomaticPageTracking - paramsInheritanceStrategy: "always"', () =
 
     await harness.navigateByUrl('/ignore-parent/child');
 
-    expect(mockSegmentService.page).not.toHaveBeenCalled();
+    expect(mockSegmentService.page).toHaveBeenCalled();
+    expect(mockSegmentService.page).toHaveBeenCalledWith(
+      'I will NOT be silenced by inheritance!',
+      undefined,
+      undefined,
+    );
   });
 });
 
